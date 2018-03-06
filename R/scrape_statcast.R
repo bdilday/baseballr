@@ -98,21 +98,63 @@ process_statcast_payload <- function(payload) {
   
   # Clean up formatting.
   payload[payload=="null"] <- NA
+  
+  character_columns <- c("des", "home_team", "away_team",
+                         "player_name", "events", "description", "hit_location", "sv_id")
+  
+  character_columns <- c(character_columns, grep("^pos[0-9]_person_id", names(payload), value = TRUE))
+  
+  numeric_columns <- c(
+    "game_pk",
+    "on_1b",
+    "on_2b",
+    "on_3b",
+    "release_pos_x",
+    "release_pos_z",
+    "release_pos_y",
+    "pfx_x",
+    "pfx_z",
+    "hc_x",
+    "hc_y",
+    "woba_denom",
+    "woba_value",
+    "babip_value",
+    "iso_value",
+    "plate_z",
+    "plate_x",
+    "vx0",
+    "vy0",
+    "vz0",
+    "ax",
+    "ay",
+    "az",
+    "sz_top",
+    "sz_bot",
+    "hit_distance_sc",
+    "launch_speed",
+    "launch_speed_angle",
+    "launch_angle",
+    "estimated_ba_using_speedangle",
+    "estimated_woba_using_speedangle",
+    "effective_speed",
+    "release_speed",
+    "zone",
+    "release_spin_rate",
+    "release_extension"
+    )
+  
   payload$game_date <- as.Date(payload$game_date, "%Y-%m-%d")
-  payload$des <- as.character(payload$des)
-  payload$game_pk <- as.character(payload$game_pk) %>% as.numeric()
-  payload$on_1b <- as.character(payload$on_1b) %>% as.numeric()
-  payload$on_2b <- as.character(payload$on_2b) %>% as.numeric()
-  payload$on_3b <- as.character(payload$on_3b) %>% as.numeric()
-  payload$release_pos_x <- as.character(payload$release_pos_x) %>% as.numeric()
-  payload$release_pos_x <- as.character(payload$release_pos_x) %>% as.numeric()
-  payload$hit_distance_sc <- as.character(payload$hit_distance_sc) %>% as.numeric()
-  payload$launch_speed <- as.character(payload$launch_speed) %>% as.numeric()
-  payload$launch_angle <- as.character(payload$launch_angle) %>% as.numeric()
-  payload$effective_speed <- as.character(payload$effective_speed) %>% as.numeric()
-  payload$release_spin_rate <- as.character(payload$release_spin_rate) %>% as.numeric()
-  payload$release_extension <- as.character(payload$release_extension) %>% as.numeric()
-  payload$barrel <- with(payload, ifelse(launch_angle <= 50 & launch_speed >= 98 & launch_speed * 1.5 - launch_angle >= 11 & launch_speed + launch_angle >= 124, 1, 0))
+  
+  for (column_name in character_columns) {
+    payload[[column_name]] <- as.character(payload[[column_name]])
+  }
+
+  for (column_name in numeric_columns) {
+    payload[[column_name]] <- as.numeric(as.character(payload[[column_name]]))
+  }
+
+  payload$barrel <- with(payload, ifelse(launch_angle <= 50 & launch_speed >= 98 & launch_speed * 1.5 - launch_angle >= 117 & launch_speed + launch_angle >= 124, 1, 0))
+ 
   message("URL read and payload acquired successfully.")
   
   return(payload)
