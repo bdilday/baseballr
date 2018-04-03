@@ -100,7 +100,8 @@ process_statcast_payload <- function(payload) {
   payload[payload=="null"] <- NA
   
   character_columns <- c("des", "home_team", "away_team",
-                         "player_name", "events", "description", "hit_location", "sv_id")
+                         "player_name", "events", "description", 
+                         "hit_location", "sv_id", "pitch_name")
   
   character_columns <- c(character_columns, grep("^pos[0-9]_person_id", names(payload), value = TRUE))
   
@@ -140,7 +141,11 @@ process_statcast_payload <- function(payload) {
     "release_speed",
     "zone",
     "release_spin_rate",
-    "release_extension"
+    "release_extension",
+    "home_score", "away_score",
+    "bat_score", "fld_score",
+    "post_away_score", "post_home_score",
+    "post_bat_score", "post_fld_score"
     )
   
   payload$game_date <- as.Date(payload$game_date, "%Y-%m-%d")
